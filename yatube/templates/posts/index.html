@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{%  load cache %}
+
+{% block title %}Последние обновления на сайте{% endblock %}
+
+{% block content %}
+  <h3 style="margin-bottom: 40px">Последние обновления на сайте</h3>
+  {% include 'posts/includes/switcher.html' with main=True %}
+  {% cache 20 index_page page_obj %}
+    {% for post in page_obj %}
+      {% include 'posts/includes/post_article.html' %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+    {% include 'posts/includes/paginator.html' %}
+  {% endcache %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Технологии{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <h1 style="font-size: xx-large; margin-top:20px; margin-left: 20px">
+      Технологии для разработки сайта:
+    </h1>
+    <aside class="col-12 col-md-3" style="margin-top: 40px">
+      <ul class="border-left">
+        <li> Python </li>
+        <li> Django <br><br></li>
+        <li> Sqlite3 </li>
+        <li> HTML/CSS/Bootstrap </li>
+      </ul>
+    </aside>
+    <article class="col-12 col-md-9" style="margin-top: 40px">
+      <ul class="border-right">
+        <li>
+          Встроенные классы и функции,
+          а также модули datetime, pytest, flake8, isort
+        </li>
+        <li>
+          Классы: Paginator, TemplateView, CreateView, UserCreationForm,
+          django.contrib.auth.views <br> Функции: render, redirect,
+          get_user_mode, get_object_or_404, reverse_lazy, get_absolute_url
+        </li>
+      </ul>
+    </article>
+  </div>
+{% endblock %} 

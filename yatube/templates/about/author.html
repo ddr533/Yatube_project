@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Об авторе проекта{% endblock %}
+
+{% block content %}
+  <div class="head_about">
+    <h1>Пока здесь только кошка автора</h1>
+  </div>
+  <div style="margin-top: 75px; margin-bottom: 75px">
+    <img src="{% static 'img/about/photo1.jpg' %}" width="350" height="350"
+         class="rounded img-thumbnail mx-auto d-block" alt="Кошка Лана">
+  </div>
+{% endblock %} 
