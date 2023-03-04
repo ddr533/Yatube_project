@@ -12,7 +12,6 @@
             {% for message in messages %}
               <p class="card-text"><span><u>{{ message.user }}:</u> </span>
                 {{ message.text|linebreaksbr|safe }} </p>
-              {% if not forloop.last %}<br>{% endif %}
             {% endfor %}
           </div>
         </div>
