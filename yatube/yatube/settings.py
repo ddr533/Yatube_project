@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
     'about.apps.AboutConfig',
+    'chat.apps.ChatConfig',
     'sorl.thumbnail',
     'debug_toolbar',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +88,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'yatube.wsgi.application'
+ASGI_APPLICATION = 'yatube.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 
 # Database

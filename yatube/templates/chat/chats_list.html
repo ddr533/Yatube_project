@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Чаты групп{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-6">
+        <h1 style="font-size: xx-large; margin-top:20px; margin-left: 20px">
+          Чаты групп:
+        </h1>
+        <article class="text-center" style="margin-top: 40px">
+          <ul class="border-right">
+            {% for group in chats_list %}
+              <li>
+                <a href="{% url 'chat:group_chat' group.slug %}">
+                    {{ group.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </article>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

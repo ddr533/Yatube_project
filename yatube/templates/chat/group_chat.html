@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Чат {{group}}{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-6">
+        <div class="card text-white bg-dark mb-3">
+          <div class="card-header">{{ group }}</div>
+          <div class="card-body overflow-auto" style="height: 400px;" id="chat-messages">
+            {% for message in messages %}
+              <p class="card-text"><span><u>{{ message.user }}:</u> </span>
+                {{ message.text|linebreaksbr|safe }} </p>
+              {% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <form>
+          <div class="mb-2">
+            <label for="exampleInputEmail1" class="form-label">Сообщение:</label>
+            <textarea autofocus class="form-control" aria-label="textarea"
+                      style="height: 80px;" id="chat-message-input">
+            </textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="chat-message-submit">
+            Отправить
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ group.slug|json_script:"json-groupname" }}
+  {{ request.user.username|json_script:"json-username" }}
+  <script>
+      const groupName = JSON.parse(document.getElementById('json-groupname').textContent);
+      const userName = JSON.parse(document.getElementById('json-username').textContent);
+
+      const chatSocket = new WebSocket(
+          'ws://'
+          + window.location.host
+          + '/ws/chat/'
+          + groupName
+          + '/'
+      );
+
+      chatSocket.onmessage = function(e) {
+          console.log('onmessage')
+
+          const data = JSON.parse(e.data);
+
+          if (data.message) {
+
+              let html = '<p class="card-text"><span><u>' + data.username +
+                  ':</u> </span>';
+                  html += data.message + '</p>';
+
+              document.querySelector('#chat-messages').innerHTML += html;
+
+              scrollToBottom();
+          }
+          else {
+              alert('The message was empty!');
+          }
+      }
+
+      chatSocket.onclose = function(e) {
+          console.log('onclose')
+      }
+
+      //
+
+      document.querySelector('#chat-message-submit').onclick = function(e) {
+          e.preventDefault()
+
+          console.log('submit')
+          const messageInputDom = document.querySelector('#chat-message-input');
+          const message = messageInputDom.value;
+
+          chatSocket.send(JSON.stringify({
+              'message': message,
+              'username': userName,
+              'group': groupName,
+          }));
+
+          messageInputDom.value = '';
+
+          return false;
+      }
+
+      //
+
+      function scrollToBottom() {
+          const objDiv = document.querySelector('#chat-messages');
+          objDiv.scrollTop = objDiv.scrollHeight;
+      }
+
+      scrollToBottom();
+  </script>
+{% endblock %}
