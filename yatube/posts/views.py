@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import get_user_model
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.cache import cache_page
+
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
@@ -18,11 +19,15 @@ def get_page_obj_paginator(request, post_list):
     return {'page_obj': page_obj}
 
 
-@cache_page(20, key_prefix='index_page')
+# @cache_page(20, key_prefix='index_page')
+# @vary_on_cookie
 def index(request):
-    post_list = (Post.objects.select_related('author')
+    posts_list = cache.get('posts_list')
+    if not posts_list:
+        posts_list = (Post.objects.select_related('author')
                  .select_related('group').all())
-    context = get_page_obj_paginator(request, post_list)
+        cache.set('posts_list', posts_list, 20)
+    context = get_page_obj_paginator(request, posts_list)
     return render(request, template_name='posts/index.html', context=context)
 
 
@@ -106,6 +111,7 @@ def add_comment(request, post_id):
 
 @login_required
 # @cache_page(20, key_prefix='follow_page')
+# @vary_on_cookie
 def follow_index(request):
     posts = (Post.objects.select_related('author').select_related('group')
              .filter(author__following__user=request.user))

@@ -94,5 +94,6 @@
 .navbar .navbar-nav .nav-link {color: #1d3e77; font-weight: 600;}
 
 /*Увеличение изображения при наведении мышки, страница About*/
-.scale {transition: 1s; /* Время эффекта */ }
-.scale:hover {transform: scale(2); /* Увеличиваем масштаб */}
+.scale {transition: 2s;/* Время эффекта */ }
+.scale:hover {transform: scale(2); position: absolute; z-index: 150;/* Увеличиваем масштаб */}
+

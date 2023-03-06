@@ -1,28 +1,68 @@
 {% extends "base.html" %}
+
 {% load static %}
 
 {% block title %}Об авторе проекта{% endblock %}
 
 {% block content %}
   <div class="container">
-    <div class="row text-center">
-      <div class="col-6">
-        <div class="card" style="width: auto">
+    <div class="row">
+      <div class="col-3">
+        <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Название карточки</h5>
-            <img src="{% static 'img/about/photo1.jpg' %}" width="350" height="350"
-             class="card-img-top rounded img-thumbnail mx-auto d-block scale img-responsive" alt="Кошка Лана">
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <h5 class="card-title">Моя кошка</h5>
+            <img style="" src="{% static 'img/about/photo1.jpg' %}" width="150" height="150"
+             class="card-img-top rounded img-thumbnail
+              mx-auto d-block scale img-responsive" alt="Кошка Лана">
+            <p class="card-text">Прежде всего, конечно же про котофейку)).
+              Это Лана. Но я чаще всего зову ее так: Кисуля-красотуля,
+              няша-стесняша, умняша-стройняша. Лане 5 лет. Очень дружелюбная,
+              игривая и мурчащая кошка. У нее есть дружок - Марк.
+            </p>
           </div>
         </div>
       </div>
-      <div class="col-6">
-        <div class="card" style="width: auto">
+      <div class="col-3">
+        <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Название карточки</h5>
-            <img src="{% static 'img/about/photo1.jpg' %}" width="350" height="350"
-             class="card-img-top rounded img-thumbnail mx-auto d-block scale img-responsive" alt="Кошка Лана">
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <h5 class="card-title">Хобби гитара</h5>
+            <img src="{% static 'img/about/photo2.jpg' %}" width="150" height="100"
+             class="card-img-top rounded img-thumbnail mx-auto d-block scale
+              img-responsive" alt="Лана и гитара">
+            <p class="card-text">Это Лана и моё главное хобби - гитара.
+              Играю около 2-х лет. Учился сам. Знаю доворовый бой и перебор))).
+              Самое главное - клевые песни. А гитара уже сама будет помогать в
+              исполнении).
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Майнинг фермы</h5>
+            <img src="{% static 'img/about/photo4.jpg' %}" width="150" height="150"
+             class="card-img-top rounded img-thumbnail mx-auto d-block
+              scale img-responsive" alt="Кошка Лана">
+            <p class="card-text">Это то, чем я зарабатывал последние 10 лет.
+              Но нынче майнинг мейнстрим и конкуренцию выдержать довольно сложно.
+              Поэтому я пока что безработный)
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Моя Гонка</h5>
+            <img src="{% static 'img/about/photo3.jpg' %}" width="150" height="150"
+             class="card-img-top rounded img-thumbnail mx-auto d-block
+              scale img-responsive" alt="Кошка Лана">
+            <p class="card-text">
+              Это моя любимая машина. Обожаю дорогу. Мощная, быстрая, красивая.
+              Подарила мне множество классных эмоций. Где я только не ездил на ней!
+              К сожалению, сейчас машина разбита и восстановлению не подлежит:(((.
+            </p>
           </div>
         </div>
       </div>

@@ -16,5 +16,5 @@ def get_group_chat(request, group_slug):
     last_msg_id = Message.objects.last().id
     messages = (Message.objects.select_related('user').select_related('group')
                 .filter(group__slug=group_slug, id__in=range(last_msg_id+20)))
-    context = {'messages': messages, 'group': messages[0].group}
+    context = {'messages': messages, 'group': Group.objects.get(slug=group_slug)}
     return render(request, 'chat/group_chat.html', context)

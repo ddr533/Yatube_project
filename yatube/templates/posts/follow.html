@@ -7,7 +7,7 @@
 {% block content %}
   <h3 style="margin-bottom: 40px">Последние обновления подписок</h3>
   {% include 'posts/includes/switcher.html' with follow=True %}
-  {% cache 20 follow_page page_obj %}
+  {% cache 20 follow_page request.user.username page_obj %}
     {% for post in page_obj %}
       {% include 'posts/includes/post_article.html' %}
       {% if not forloop.last %}<hr>{% endif %}

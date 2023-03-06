@@ -9,10 +9,15 @@
         <div class="card text-white bg-dark mb-3">
           <div class="card-header">{{ group }}</div>
           <div class="card-body overflow-auto" style="height: 400px;" id="chat-messages">
-            {% for message in messages %}
-              <p class="card-text"><span><u>{{ message.user }}:</u> </span>
-                {{ message.text|linebreaksbr|safe }} </p>
-            {% endfor %}
+            {% if messages %}
+              {% for message in messages %}
+                <p class="card-text"><span><u>{{ message.user }}:</u> </span>
+                  {{ message.text|linebreaksbr|safe }} </p>
+              {% endfor %}
+            {% else %}
+                <p class="card-text">Сообщений нет</p>
+            {% endif %}
+
           </div>
         </div>
         <form>
