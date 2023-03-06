@@ -4,11 +4,28 @@
 {% block title %}Об авторе проекта{% endblock %}
 
 {% block content %}
-  <div class="head_about">
-    <h1>Пока здесь только кошка автора</h1>
-  </div>
-  <div style="margin-top: 75px; margin-bottom: 75px">
-    <img src="{% static 'img/about/photo1.jpg' %}" width="350" height="350"
-         class="rounded img-thumbnail mx-auto d-block" alt="Кошка Лана">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-6">
+        <div class="card" style="width: auto">
+          <div class="card-body">
+            <h5 class="card-title">Название карточки</h5>
+            <img src="{% static 'img/about/photo1.jpg' %}" width="350" height="350"
+             class="card-img-top rounded img-thumbnail mx-auto d-block scale img-responsive" alt="Кошка Лана">
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card" style="width: auto">
+          <div class="card-body">
+            <h5 class="card-title">Название карточки</h5>
+            <img src="{% static 'img/about/photo1.jpg' %}" width="350" height="350"
+             class="card-img-top rounded img-thumbnail mx-auto d-block scale img-responsive" alt="Кошка Лана">
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %} 

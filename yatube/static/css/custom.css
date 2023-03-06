@@ -92,3 +92,7 @@
 /* Изменение цвета текста и активных пунктов навигационного меню */
 .navbar-nav li a.active {background-color: #5baddc; border-radius: 10px}
 .navbar .navbar-nav .nav-link {color: #1d3e77; font-weight: 600;}
+
+/*Увеличение изображения при наведении мышки, страница About*/
+.scale {transition: 1s; /* Время эффекта */ }
+.scale:hover {transform: scale(2); /* Увеличиваем масштаб */}
