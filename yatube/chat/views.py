@@ -1,3 +1,5 @@
+import time
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 
@@ -18,3 +20,4 @@ def get_group_chat(request, group_slug):
                 .filter(group__slug=group_slug, id__in=range(last_msg_id+20)))
     context = {'messages': messages, 'group': Group.objects.get(slug=group_slug)}
     return render(request, 'chat/group_chat.html', context)
+

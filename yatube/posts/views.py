@@ -1,3 +1,6 @@
+import time
+from functools import wraps
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import get_user_model
@@ -11,6 +14,17 @@ from .models import Follow, Group, Post, User
 
 User = get_user_model()
 
+#Декоратор для тестирования скорости выполнения функций
+def execute_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        res = func(*args, **kwargs)
+        stop = time.time()
+        print(stop-start)
+        return res
+    return wrapper
+
 
 def get_page_obj_paginator(request, post_list):
     paginator = Paginator(post_list, settings.POSTS_PER_PAGE)
@@ -21,6 +35,7 @@ def get_page_obj_paginator(request, post_list):
 
 # @cache_page(20, key_prefix='index_page')
 # @vary_on_cookie
+# @execute_time
 def index(request):
     posts_list = cache.get('posts_list')
     if not posts_list:
@@ -31,6 +46,7 @@ def index(request):
     return render(request, template_name='posts/index.html', context=context)
 
 
+# @execute_time
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     group_post_list = group.posts.select_related('author').all()
@@ -134,3 +150,6 @@ def profile_unfollow(request, username):
     follow = get_object_or_404(Follow, user=request.user, author=author)
     follow.delete()
     return redirect('posts:main')
+
+
+
