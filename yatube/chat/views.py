@@ -17,7 +17,9 @@ def get_chats_list(request):
 
 @login_required
 def get_group_chat(request, group_slug):
-    time_zone = get_object_or_404(UserProfile, user=request.user).timezone
+    profile = UserProfile.objects.filter(user=request.user).first()
+    time_zone = (timezone.get_current_timezone()
+                 if not profile else profile.timezone)
     last_msg_id = Message.objects.last().id
     messages = (Message.objects.select_related('user').select_related('group')
                 .filter(group__slug=group_slug, id__in=range(last_msg_id+20)))
