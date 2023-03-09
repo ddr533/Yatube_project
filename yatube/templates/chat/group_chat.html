@@ -42,9 +42,12 @@
 {% block scripts %}
   {{ group.slug|json_script:"json-groupname" }}
   {{ request.user.username|json_script:"json-username" }}
+  {{ time_zone|json_script:"json-timezone" }}
+
   <script>
       const groupName = JSON.parse(document.getElementById('json-groupname').textContent);
       const userName = JSON.parse(document.getElementById('json-username').textContent);
+      const timeZone = JSON.parse(document.getElementById('json-timezone').textContent);
 
       const chatSocket = new WebSocket(
           'ws://'
@@ -88,9 +91,10 @@
           console.log('submit')
 
           var time = new Date();
+          var options = {hour: "numeric", minute: "2-digit", timeZone: timeZone}
           const messageInputDom = document.querySelector('#chat-message-input');
           const message = messageInputDom.value;
-          const now = time.toLocaleTimeString([], {hour: "numeric", minute: "2-digit" })
+          const now = time.toLocaleTimeString('it-IT', options)
 
           chatSocket.send(JSON.stringify({
               'message': message,
