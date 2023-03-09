@@ -5,6 +5,7 @@ charset-normalizer==2.0.12
 colorama==0.4.6
 Django==3.0
 django-debug-toolbar==3.2.4
+django-tz-detect
 Faker==12.0.1
 flake8==6.0.0
 idna==3.4

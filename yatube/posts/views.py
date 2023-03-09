@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import get_user_model
 from django.core.cache import cache
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
 
@@ -69,8 +70,10 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    comments = post.comments.all()
+    post = (get_object_or_404(Post.objects.select_related('author')
+                              .annotate(count=Count('author__posts')),
+                              id=post_id))
+    comments = post.comments.select_related('author').all()
     comment_form = CommentForm()
     context = {'post': post, 'comments': comments,
                'comment_form': comment_form}

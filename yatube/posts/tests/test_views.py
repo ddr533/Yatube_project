@@ -294,6 +294,8 @@ class TestPostsPages(TestCase):
                              for post in response_group_1.context['page_obj']))
 
 
+@override_settings(CACHES={
+    'default':{'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}})
 class TestPaginatorViews(TestCase):
     @classmethod
     def setUpClass(cls):

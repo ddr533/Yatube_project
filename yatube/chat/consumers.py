@@ -31,6 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = data['message']
         username = data['username']
         group = data['group']
+        time = data['time']
 
         await self.save_message(username, group, message)
 
@@ -41,6 +42,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'username': username,
                 'group': group,
+                'time': time
             }
         )
 
@@ -48,11 +50,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = event['message']
         username = event['username']
         group = event['group']
+        time = event['time']
 
         await self.send(text_data=json.dumps({
             'message': message,
             'username': username,
             'group': group,
+            'time': time,
         }))
 
     @sync_to_async

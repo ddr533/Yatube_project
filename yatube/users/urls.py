@@ -59,4 +59,8 @@ urlpatterns = [
             template_name='users/password_change_done.html'),
         name='password_change_done'
     ),
+    path(
+        'set_user_info/', views.set_user_info,
+         name='set_user_info'),
+
 ]
