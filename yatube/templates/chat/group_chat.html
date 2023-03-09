@@ -61,11 +61,12 @@
           console.log('onmessage')
 
           const data = JSON.parse(e.data);
-          
+          var time = new Date();
+          var options = {hour: "numeric", minute: "2-digit", timeZone: timeZone}
+          const now = time.toLocaleTimeString('it-IT', options)
           if (data.message) {
-
               let html = '<p class="card-text"><span>'
-                  + data.time + ' ' + '<u>'
+                  + now + ' ' + '<u>'
                   + data.username
                   + ':</u> </span>';
                   html += data.message + '</p>';
@@ -90,17 +91,14 @@
 
           console.log('submit')
 
-          var time = new Date();
-          var options = {hour: "numeric", minute: "2-digit", timeZone: timeZone}
           const messageInputDom = document.querySelector('#chat-message-input');
           const message = messageInputDom.value;
-          const now = time.toLocaleTimeString('it-IT', options)
 
           chatSocket.send(JSON.stringify({
               'message': message,
               'username': userName,
               'group': groupName,
-              'time': now
+
           }));
 
           messageInputDom.value = '';
