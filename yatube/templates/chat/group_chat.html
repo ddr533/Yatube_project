@@ -20,7 +20,7 @@
                     {{ message.date_added|timezone:time_zone|date:"D/M/Y" }}
                   </p><hr style="margin-top: 0cm;">
                 {% endif %}
-                <p class="card-text"><span>{{ message.date_added|timezone:time_zone|date:"G:i" }}
+                <p class="card-text"><span>{{ message.date_added|timezone:time_zone|date:"H:i" }}
                   <u>{{ message.user }}:</u> </span>
                   {{ message.text|linebreaksbr|safe }} </p>
               {% empty %}
@@ -68,7 +68,7 @@
 
           const data = JSON.parse(e.data);
           var time = new Date();
-          var options = {hour: "numeric", minute: "2-digit", timeZone: timeZone}
+          var options = {hour: "2-digit", minute: "2-digit", timeZone: timeZone}
           const now = time.toLocaleTimeString('it-IT', options)
           if (data.message) {
               let html = '<p class="card-text"><span>'
