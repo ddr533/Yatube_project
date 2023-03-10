@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load tz %}
+{% load user_templatetags %}
 
 {% block title %}Чат {{group.title}}{% endblock %}
 
@@ -11,16 +12,20 @@
         <div class="card text-white bg-dark mb-3">
           <div class="card-header">{{ group }}</div>
           <div class="card-body overflow-auto" style="height: 400px;" id="chat-messages">
-            {% if messages %}
-	            {% for message in messages %}
+            {% update_chat_day messages.0.date_added|timezone:time_zone|date:"d" as day_of_message %}
+              {% for message in messages %}
+                {% if message.date_added|timezone:time_zone|date:"d" != day_of_message %}
+                  {% update_chat_day message.date_added|timezone:time_zone|date:"d" as day_of_message %}
+                  <hr style="margin-bottom: 0cm;"><p style="text-align: center; margin-bottom: 0cm;">
+                    {{ message.date_added|timezone:time_zone|date:"D/M/Y" }}
+                  </p><hr style="margin-top: 0cm;">
+                {% endif %}
                 <p class="card-text"><span>{{ message.date_added|timezone:time_zone|date:"G:i" }}
                   <u>{{ message.user }}:</u> </span>
                   {{ message.text|linebreaksbr|safe }} </p>
-              {% endfor %}
-            {% else %}
+              {% empty %}
                 <p class="card-text">Сообщений нет</p>
-            {% endif %}
-
+              {% endfor %}
           </div>
         </div>
         <form>
@@ -42,6 +47,7 @@
 {% block scripts %}
   {{ group.slug|json_script:"json-groupname" }}
   {{ request.user.username|json_script:"json-username" }}
+  {{ time_zone|json_script:"json-timezone" }}
   {{ time_zone|json_script:"json-timezone" }}
 
   <script>
