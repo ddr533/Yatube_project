@@ -19,11 +19,11 @@
     <img class="card-img my-2" src="{{ im.url }}">
   {% endthumbnail %}
   <p>{{ post.text|convert_markdown|safe|linebreaks }}</p>
-  <a href={% url 'posts:post_detail' post.id %}>Подробная информация</a>
+  <a href={{ post.get_absolute_url }}>Подробная информация</a>
 </article>
 {% if not is_group_page and post.group %}
   <p>
-    <a href="{% url 'posts:group_list' post.group.slug %}">
+    <a href="{{ post.group.get_absolute_url }}">
       Все записи группы: "{{ post.group }}"
     </a>
   </p>

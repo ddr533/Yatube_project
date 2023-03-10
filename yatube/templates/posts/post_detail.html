@@ -45,9 +45,10 @@
         <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
           Редактировать запись
         </a>
-        <a class="btn btn-primary" href="{% url 'posts:post_del' post.id %}">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">
           Удалить запись
-        </a>
+        </button>
       {% endif %}
 
       {% load user_filters %}
@@ -82,5 +83,31 @@
         </div>
       {% endfor %}
     </article>
+  </div>
+<!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1"
+       aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Подтвердите действие</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Отмена">
+          </button>
+        </div>
+        <div class="modal-body">
+          Вы действительно хотите удалить запись?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Отмена
+          </button>
+          <button class="btn btn-danger"
+                  onclick="window.location.href='{% url 'posts:post_del' post.id %}'">
+            Удалить
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %}
