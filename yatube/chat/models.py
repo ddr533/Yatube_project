@@ -11,5 +11,5 @@ class Message(models.Model):
                               on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ('date_added',)
+    def __str__(self):
+        return str(self.id)
