@@ -160,11 +160,12 @@ def profile_unfollow(request, username):
 def get_search_result(request):
     text = request.GET.get('text')
     posts_search = (
-        Post.objects.filter(Q(text__contains=text)
-                            | Q(text__contains=text.lower())
-                            | Q(text__contains=text.capitalize())
-                            | Q(author__username__contains=text)
-                            | Q(author__first_name__contains=text)))
+        Post.objects.select_related('author').select_related('group')
+        .filter(Q(text__contains=text)
+                | Q(text__contains=text.lower())
+                | Q(text__contains=text.capitalize())
+                | Q(author__username__contains=text)
+                | Q(author__first_name__contains=text)))
     context = get_page_obj_paginator(request, posts_search)
     context.update({'title': 'Результаты поиска'})
     return render(request, 'posts/index.html', context)
