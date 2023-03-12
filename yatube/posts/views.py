@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import get_user_model
 from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 
@@ -44,6 +45,7 @@ def index(request):
                  .select_related('group').all())
         cache.set('posts_list', posts_list, 20)
     context = get_page_obj_paginator(request, posts_list)
+    context.update({'title': 'Последние записи'})
     return render(request, template_name='posts/index.html', context=context)
 
 
@@ -154,5 +156,17 @@ def profile_unfollow(request, username):
     follow.delete()
     return redirect('posts:main')
 
+
+def get_search_result(request):
+    text = request.POST.get('text')
+    posts_search = (
+        Post.objects.filter(Q(text__contains=text)
+                            | Q(text__contains=text.lower())
+                            | Q(text__contains=text.capitalize())
+                            | Q(author__username__contains=text)
+                            | Q(author__first_name__contains=text)))
+    context = get_page_obj_paginator(request, posts_search)
+    context.update({'title': 'Результаты поиска'})
+    return render(request, 'posts/index.html', context)
 
 

@@ -38,6 +38,13 @@
           </li>
         </ul>
 
+        <form method="post" class="d-flex me-auto" action="{% url 'posts:search' %}">
+          {% csrf_token %}
+          <input class="form-control me-2" type="search" name="text"
+                 placeholder="Найти в записях" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Поиск</button>
+        </form>
+
         <ul class="navbar-nav ms-auto">
           {% if user.is_authenticated %}
             <li class="nav-item dropdown">
@@ -67,6 +74,7 @@
             </li>
           {% endif %}
         </ul>
+
       {% endwith %}
     </div>
   </div>

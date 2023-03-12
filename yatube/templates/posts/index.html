@@ -2,10 +2,10 @@
 
 {% load cache %}
 
-{% block title %}Последние обновления на сайте{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-  <h3 style="margin-bottom: 40px">Последние обновления на сайте</h3>
+  <h3 style="margin-bottom: 40px">{{ title }}</h3>
   {% include 'posts/includes/switcher.html' with main=True %}
   {% cache 20 index_page page_obj %}
     {% for post in page_obj %}
