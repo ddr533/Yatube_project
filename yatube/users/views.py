@@ -21,11 +21,9 @@ class SignUp(CreateView):
 
 @login_required
 def set_user_info(request):
-    profile = UserProfile.objects.filter(user=request.user).first()
+    profile = UserProfile.objects.get_or_create(user=request.user)[0]
     form = UserProfileForm(request.POST or None, instance=profile)
     if form.is_valid():
-        profile = form.save(commit=False)
-        profile.user = request.user
         profile.save()
         return redirect('posts:main')
     return render(request, 'users/set_user_info.html', {'form': form})
