@@ -20,9 +20,13 @@
                     {{ message.date_added|timezone:time_zone|date:"D/M/Y" }}
                   </p><hr style="margin-top: 0cm;">
                 {% endif %}
-                <p class="card-text"><span>{{ message.date_added|timezone:time_zone|date:"H:i" }}
-                  <u>{{ message.user }}:</u> </span>
-                  {{ message.text|linebreaksbr|safe }} </p>
+                <p class="card-text">
+                  <span>
+                    {{ message.date_added|timezone:time_zone|date:"H:i" }}
+                    <u>{{ message.user }}:</u>
+                  </span>
+                  {{ message.text|linebreaksbr|safe }}
+                </p>
               {% empty %}
                 <p class="card-text">Сообщений нет</p>
               {% endfor %}
@@ -47,7 +51,6 @@
 {% block scripts %}
   {{ group.slug|json_script:"json-groupname" }}
   {{ request.user.username|json_script:"json-username" }}
-  {{ time_zone|json_script:"json-timezone" }}
   {{ time_zone|json_script:"json-timezone" }}
 
   <script>
