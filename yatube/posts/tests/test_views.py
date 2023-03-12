@@ -124,14 +124,13 @@ class TestPostsPages(TestCase):
         new_post.delete()
 
     def test_cache_working_on_main_page(self):
-        """Работает кэш на главной страниц.
-        Удаленная запись сохраняется в кэше 20 секунд
+        """Работает кэш на главной страниц. Удаленная запись сохраняется в кэше
         и выводится на главную страницу.
         """
-        Post.objects.create(author=self.user, text='test_cache')
+        new_post = Post.objects.create(author=self.user, text='test_cache')
         response = self.auth_user.get(reverse('posts:main'))
         content_before_the_del = response.content
-        Post.objects.get(id=4, text='test_cache').delete()
+        new_post.delete()
         response = self.auth_user.get(reverse('posts:main'))
         content_after_the_del = response.content
         self.assertEqual(content_after_the_del, content_before_the_del)
@@ -344,7 +343,7 @@ class TestPostsPages(TestCase):
 
 
 @override_settings(CACHES={
-    'default':{'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}})
+    'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}})
 class TestPaginatorViews(TestCase):
     @classmethod
     def setUpClass(cls):
