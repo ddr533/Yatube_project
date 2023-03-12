@@ -3,7 +3,7 @@
 {% load thumbnail %}
 {% load user_filters %}
 
-{% block title %}{{ post }}{% endblock %}
+{% block title %}{{ post|convert_markdown|striptags }}{% endblock %}
 
 {% block content %}
   <div class="row">
