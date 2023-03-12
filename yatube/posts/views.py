@@ -158,7 +158,7 @@ def profile_unfollow(request, username):
 
 
 def get_search_result(request):
-    text = request.POST.get('text')
+    text = request.GET.get('text')
     posts_search = (
         Post.objects.filter(Q(text__contains=text)
                             | Q(text__contains=text.lower())

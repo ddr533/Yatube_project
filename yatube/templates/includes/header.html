@@ -38,9 +38,8 @@
           </li>
         </ul>
 
-        <form method="post" class="d-flex me-auto" action="{% url 'posts:search' %}">
-          {% csrf_token %}
-          <input class="form-control me-2" type="search" name="text"
+        <form method="get" class="d-flex me-auto" action="{% url 'posts:search' %}">
+           <input class="form-control me-2" type="text" name="text"
                  placeholder="Найти в записях" aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Поиск</button>
         </form>
