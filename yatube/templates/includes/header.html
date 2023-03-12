@@ -13,11 +13,10 @@
             aria-expanded="false" aria-label="Переключатель навигации">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav" >
       {% with request.resolver_match.view_name as view_name %}
-        <ul class="navbar-nav">
+        <ul class="navbar-nav me-auto">
           {% if user.is_authenticated %}
-
             <li class="nav-item">
               <a class="nav-link {% if view_name == 'posts:post_create' %} active
                 {% endif %}" href="{% url 'posts:post_create' %}">Новая запись
@@ -28,22 +27,7 @@
                 {% endif %}" href="{% url 'chat:chats_list' %}">Чат
               </a>
             </li>
-
-          {% else %}
-
-            <li class="nav-item">
-              <a class="nav-link link-light
-                  {% if view_name == 'users:login' %} active {% endif %}"
-                    href="{% url 'users:login' %}">Войти</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link link-light
-                {% if view_name == 'users:signup' %} active {% endif %}"
-                  href="{% url 'users:signup' %}">Регистрация</a>
-            </li>
-
           {% endif %}
-
           <li class="nav-item">
             <a class="nav-link {% if view_name == 'about:tech' %} active
               {% endif %}" href="{% url 'about:tech' %}">Технологии</a>
@@ -52,26 +36,36 @@
             <a class="nav-link {% if view_name == 'about:author' %} active
               {% endif %}" href="{% url 'about:author' %}">Об авторе</a>
           </li>
+        </ul>
 
+        <ul class="navbar-nav ms-auto">
           {% if user.is_authenticated %}
-                        <li class="nav-item">
-              <a class="nav-link link-light
-                {% if view_name == 'users:password_change' %} active
-                  {% endif %}" href="{% url 'users:password_change' %}">
-                Изменить пароль
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Пользователь: {{ user.username }}
               </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'users:set_user_info' %}">
+                  Профиль</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'users:password_change' %}">
+                  Изменить пароль</a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'users:logout' %}">
+                  Выйти</a>
+                </li>
+              </ul>
             </li>
+          {% else %}
             <li class="nav-item">
-              <a class="nav-link link-light" href="{% url 'users:logout' %}">
-                Выйти
+              <a class="nav-link link-light
+                  {% if view_name == 'users:login' %} active {% endif %}"
+                    href="{% url 'users:login' %}">Войти
               </a>
             </li>
-            <span style="padding-top:.5rem">Пользователь:
-              {{ user.username }}
-            </span>
-
           {% endif %}
-
         </ul>
       {% endwith %}
     </div>
