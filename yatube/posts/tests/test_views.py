@@ -293,6 +293,55 @@ class TestPostsPages(TestCase):
         self.assertFalse(any(post.group == self.group_2
                              for post in response_group_1.context['page_obj']))
 
+    def test_author_can_delete_own_post(self):
+        """Автор может удалить свою запись."""
+        new_post = Post.objects.create(author=self.user, text='new_post')
+        response = self.auth_user.get(reverse(
+            'posts:profile', kwargs={'username': new_post.author}))
+        count_posts_till_del = response.context.get('page_obj').paginator.count
+        response = self.auth_user.get(reverse(
+            'posts:post_del', kwargs={'post_id': new_post.id}))
+        self.assertRedirects(response, reverse(
+            'posts:profile', kwargs={'username': new_post.author.username}))
+        response = self.auth_user.get(reverse(
+            'posts:profile', kwargs={'username': new_post.author}))
+        count_posts_after_del = response.context.get('page_obj').paginator.count
+        self.assertEqual(count_posts_after_del, count_posts_till_del - 1)
+
+    def test_non_author_cant_delete_post(self):
+        """Авторизованный пользователь, не являющийся автором,
+         не может удалить запись.
+         """
+        new_post = Post.objects.create(author=self.user, text='new_post')
+        response = self.auth_lonely_user.get(reverse(
+            'posts:profile', kwargs={'username': new_post.author}))
+        count_posts_till_del = response.context.get('page_obj').paginator.count
+        response = self.auth_lonely_user.get(reverse(
+            'posts:post_del', kwargs={'post_id': new_post.id}))
+        self.assertRedirects(response, reverse(
+            'posts:post_detail', kwargs={'post_id': new_post.id}))
+        response = self.auth_lonely_user.get(reverse(
+            'posts:profile', kwargs={'username': new_post.author}))
+        count_posts_after_del = response.context.get('page_obj').paginator.count
+        self.assertEqual(count_posts_after_del, count_posts_till_del)
+        new_post.delete()
+
+    def test_non_auth_user_cant_delete_post(self):
+        """Не авторизованный пользовтаель не может удалить запись."""
+        new_post = Post.objects.create(author=self.user, text='new_post')
+        response = self.not_auth_user.get(reverse(
+            'posts:profile', kwargs={'username': new_post.author}))
+        count_posts_till_del = response.context.get('page_obj').paginator.count
+        response = self.not_auth_user.get(reverse(
+            'posts:post_del', kwargs={'post_id': new_post.id}))
+        self.assertRedirects(
+            response, f'/auth/login/?next=/posts/{new_post.id}/delete/')
+        response = self.not_auth_user.get(reverse(
+            'posts:profile', kwargs={'username': new_post.author}))
+        count_posts_after_del = response.context.get('page_obj').paginator.count
+        self.assertEqual(count_posts_after_del, count_posts_till_del)
+        new_post.delete()
+
 
 @override_settings(CACHES={
     'default':{'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}})
