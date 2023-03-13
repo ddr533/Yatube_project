@@ -9,10 +9,15 @@ User = get_user_model()
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(to=User,
-                             verbose_name='Пользователь',
-                             related_name='profile',
-                             on_delete=models.CASCADE
-                             )
-    timezone = models.CharField(max_length=32, choices=TIMEZONES,
-                                default='UTC', blank=False)
+    user = models.OneToOneField(
+        to=User,
+        verbose_name='Пользователь',
+        related_name='profile',
+        on_delete=models.CASCADE
+    )
+    timezone = models.CharField(
+        max_length=32,
+        choices=TIMEZONES,
+        default='UTC',
+        blank=False
+    )
