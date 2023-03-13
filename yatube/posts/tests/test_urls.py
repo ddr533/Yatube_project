@@ -47,6 +47,8 @@ class TestPostsURLs(TestCase):
             '/group/test_slug/': HTTPStatus.OK,
             '/profile/author/': HTTPStatus.OK,
             '/posts/1/': HTTPStatus.OK,
+            '/search/': HTTPStatus.OK,
+            '/search/?text=test/': HTTPStatus.OK,
             '/unexisting_page/': HTTPStatus.NOT_FOUND
         }
         for user in users:
@@ -69,8 +71,7 @@ class TestPostsURLs(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_redirect_for_quest_client(self):
-        """
-        Перенаправление неавторизованных пользователей со страницы создания,
+        """Перенаправление неавторизованных пользователей со страницы создания,
         редактирования, комментирования и удаления записей
         на страницу авторизации.
         """
@@ -87,8 +88,7 @@ class TestPostsURLs(TestCase):
                                      (f'/auth/login/?next={address}'))
 
     def test_pages_not_avaliable_for_non_author(self):
-        """
-        Страница по адресу posts/<id>/edit/ и posts/<id>/delete/
+        """Страница по адресу posts/<id>/edit/ и posts/<id>/delete/
         перенаправит пользователя, не являющегося автором записи,
         на страницу этой записи.
         """
@@ -117,6 +117,7 @@ class TestPostsURLs(TestCase):
             '/posts/1/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
             '/posts/1/edit/': 'posts/create_post.html',
+            '/search/?text=test/': 'posts/index.html',
         }
         for address, template in templates_url_names.items():
             with self.subTest(address=address):

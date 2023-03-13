@@ -7,12 +7,12 @@ from django.contrib.auth.views import get_user_model
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
+
 
 User = get_user_model()
 
@@ -159,6 +159,9 @@ def profile_unfollow(request, username):
 
 def get_search_result(request):
     text = request.GET.get('text')
+    if not text:
+        return render(request, 'posts/index.html',
+                      {'title': 'Введите текст в строку поиска'})
     posts_search = (
         Post.objects.select_related('author').select_related('group')
         .filter(Q(text__contains=text)
@@ -167,7 +170,8 @@ def get_search_result(request):
                 | Q(author__username__contains=text)
                 | Q(author__first_name__contains=text)))
     context = get_page_obj_paginator(request, posts_search)
-    context.update({'title': 'Результаты поиска'})
+    count_posts = context['page_obj'].paginator.count
+    title = 'Результаты поиска' if count_posts else 'Ничего не найдено'
+    context.update({'title': title})
+    cache.clear()
     return render(request, 'posts/index.html', context)
-
-

@@ -341,6 +341,14 @@ class TestPostsPages(TestCase):
         self.assertEqual(count_posts_after_del, count_posts_till_del)
         new_post.delete()
 
+    def test_text_search(self):
+        """Работает поиск по всем записям."""
+        Post.objects.create(author=self.user, text='is_newwwws_post')
+        response = self.auth_user.get('/search/?text=new')
+        count_posts = response.context.get('page_obj').paginator.count
+        self.assertEqual(response.context.get('title'), 'Результаты поиска')
+        self.assertEqual(count_posts, 1)
+
 
 @override_settings(CACHES={
     'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}})
