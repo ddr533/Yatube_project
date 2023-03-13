@@ -3,11 +3,6 @@
 <nav class="navbar navbar-expand-md navbar-light"
      style="background-color: lightskyblue">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'posts:main' %}">
-      <img src="{% static 'img/logo.png' %}" width="30" height="30"
-           class="d-inline-block align-top" alt="">
-      <span style="color:red">Ya</span>tube
-    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarNav" aria-controls="navbarNav"
             aria-expanded="false" aria-label="Переключатель навигации">
@@ -15,19 +10,44 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav" >
       {% with request.resolver_match.view_name as view_name %}
-        <ul class="navbar-nav me-auto">
-          {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link {% if view_name == 'posts:post_create' %} active
-                {% endif %}" href="{% url 'posts:post_create' %}">Новая запись
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if view_name == 'chat:chats_list' %} active
-                {% endif %}" href="{% url 'chat:chats_list' %}">Чат
-              </a>
-            </li>
-          {% endif %}
+       <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="navbar-brand nav-link dropdown-toggle" href="#"
+               id="navbarDropdown"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{% static 'img/logo.png' %}" width="30" height="30"
+                class="d-inline-block align-top" alt="">
+              <span style="color:red">Ya</span>tube
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'users:set_user_info' %}">
+                Профиль</a>
+              </li>
+              <li><a class="dropdown-item" href="{% url 'users:password_change' %}">
+                Изменить пароль</a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'users:logout' %}">
+                Выйти</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'posts:main' %} active
+              {% endif %}" href="{% url 'posts:main' %}">Главная
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'posts:post_create' %} active
+              {% endif %}" href="{% url 'posts:post_create' %}">Новая запись
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'chat:chats_list' %} active
+              {% endif %}" href="{% url 'chat:chats_list' %}">Чат
+            </a>
+          </li>
           <li class="nav-item">
             <a class="nav-link {% if view_name == 'about:tech' %} active
               {% endif %}" href="{% url 'about:tech' %}">Технологии</a>
@@ -36,45 +56,34 @@
             <a class="nav-link {% if view_name == 'about:author' %} active
               {% endif %}" href="{% url 'about:author' %}">Об авторе</a>
           </li>
-        </ul>
-
-        <form method="get" class="d-flex me-auto" action="{% url 'posts:search' %}">
-           <input class="form-control me-2" type="text" name="text"
-                 placeholder="Найти в записях" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Поиск</button>
-        </form>
-
-        <ul class="navbar-nav ms-auto">
-          {% if user.is_authenticated %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Пользователь: {{ user.username }}
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="{% url 'users:set_user_info' %}">
-                  Профиль</a>
-                </li>
-                <li><a class="dropdown-item" href="{% url 'users:password_change' %}">
-                  Изменить пароль</a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{% url 'users:logout' %}">
-                  Выйти</a>
-                </li>
-              </ul>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link link-light
-                  {% if view_name == 'users:login' %} active {% endif %}"
-                    href="{% url 'users:login' %}">Войти
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-
+        {% else %}
+          <a class="navbar-brand" href="{% url 'posts:main' %}">
+            <img src="{% static 'img/logo.png' %}" width="30" height="30"
+                class="d-inline-block align-top" alt="">
+            <span style="color:red">Ya</span>tube
+          </a>
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'about:tech' %} active
+              {% endif %}" href="{% url 'about:tech' %}">Технологии</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if view_name == 'about:author' %} active
+              {% endif %}" href="{% url 'about:author' %}">Об авторе</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link link-light
+                {% if view_name == 'users:login' %} active {% endif %}"
+                  href="{% url 'users:login' %}">Войти
+            </a>
+          </li>
+        {% endif %}
+      </ul>
       {% endwith %}
+      <form method="get" class="d-flex ms-auto" action="{% url 'posts:search' %}">
+         <input class="form-control me-2" type="text" name="text"
+               placeholder="Найти в записях" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Поиск</button>
+      </form>
     </div>
   </div>
 </nav>
