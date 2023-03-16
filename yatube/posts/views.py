@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import get_user_model
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -12,7 +13,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
-
 
 User = get_user_model()
 
@@ -42,7 +42,7 @@ def index(request):
     posts_list = cache.get('posts_list')
     if not posts_list:
         posts_list = (Post.objects.select_related('author')
-                 .select_related('group').all())
+                      .select_related('group').all())
         cache.set('posts_list', posts_list, 20)
     context = get_page_obj_paginator(request, posts_list)
     context.update({'title': 'Последние записи'})
@@ -63,11 +63,10 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     user_posts = author.posts.select_related('group').all()
     context = get_page_obj_paginator(request, user_posts)
-    context.update({'author': author})
     following = (request.user.is_authenticated
                  and Follow.objects.filter(user=request.user,
                                            author=author).exists())
-    context.update({'following': following})
+    context.update({'following': following, 'author': author})
     return render(request, 'posts/profile.html', context)
 
 
@@ -98,7 +97,7 @@ def post_create(request):
 def post_edit(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.user != post.author or not request.user.is_authenticated:
-        return redirect('posts:post_detail', post_id)
+        raise PermissionDenied('Редактировать запись может только автор')
     form = PostForm(request.POST or None,
                     files=request.FILES or None,
                     instance=post)
@@ -113,7 +112,7 @@ def post_edit(request, post_id):
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.user != post.author:
-        return redirect('posts:post_detail', post_id)
+        raise PermissionDenied('Удалить запись может только автор')
     post.delete()
     return redirect('posts:profile', post.author.username)
 
@@ -134,9 +133,13 @@ def add_comment(request, post_id):
 # @cache_page(20, key_prefix='follow_page')
 # @vary_on_cookie
 def follow_index(request):
-    posts = (Post.objects.select_related('author').select_related('group')
-             .filter(author__following__user=request.user))
-    context = get_page_obj_paginator(request, posts)
+    follow_posts = cache.get('follow_posts')
+    if not follow_posts:
+        follow_posts = (
+            (Post.objects.select_related('author').select_related('group')
+             .filter(author__following__user=request.user)))
+        cache.set('follow_posts', follow_posts, 20)
+    context = get_page_obj_paginator(request, follow_posts)
     return render(request, 'posts/follow.html', context)
 
 
@@ -144,9 +147,10 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     user = request.user
-    if user != author:
-        Follow.objects.get_or_create(user=request.user, author=author)
-    return redirect('posts:follow_index')
+    if user == author:
+        raise PermissionDenied()
+    Follow.objects.get_or_create(user=request.user, author=author)
+    return render(request, 'posts/follow.html')
 
 
 @login_required
