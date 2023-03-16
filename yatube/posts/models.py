@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import CheckConstraint, F, Q
 from django.urls import reverse
 
 User = get_user_model()
@@ -101,15 +102,21 @@ class Follow(models.Model):
         to=User,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='Подписчик'
+        verbose_name='Подписчик',
     )
     author = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Подписан на'
+        verbose_name='Подписан на',
     )
 
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            CheckConstraint(check=~Q(user=F('author')), name='user!=author')
+        ]
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'
