@@ -19,9 +19,10 @@ class TestUserUrls(TestCase):
         self.auth_user.force_login(self.user)
 
     def test_urls_status_code_for_auth_user(self):
-        """Пользовательские служебные страницы имеют
-         правильные response коды.
-         """
+        """
+        Пользовательские служебные страницы имеют
+        правильные response коды.
+        """
         pages_code = {
             reverse('users:password_change'): HTTPStatus.OK,
             reverse('users:set_user_info'): HTTPStatus.OK,
