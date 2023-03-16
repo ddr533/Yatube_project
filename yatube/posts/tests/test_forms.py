@@ -92,7 +92,7 @@ class TestPostsForms(TestCase):
             Post.objects.filter(
                 id=self.post.id,
                 text=form_data['text'],
-                group=self.test_group_2.id
+                group=form_data['group'],
             ).exists()
         )
         self.assertEqual(Group.objects.get(
@@ -101,7 +101,8 @@ class TestPostsForms(TestCase):
             slug=self.test_group_2.slug).posts.count(), 1)
 
     def test_add_comment(self):
-        """После успешного добавления комментарий
+        """
+        После успешного добавления комментарий
         появляется на странице записи.
         """
         page = reverse('posts:post_detail', kwargs={'post_id': self.post.id})
