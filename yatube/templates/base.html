@@ -24,7 +24,7 @@
     <main>
       <div class="container py-5">
         {% block content %}
-          Контент не подвезли :(
+          {{ content|safe }}
         {% endblock %}
         {% block scripts %}
         {% endblock %}
