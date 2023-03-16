@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка 403{% endblock %}
+
+{% block content %}
+  <h1>Ошибка 403</h1>
+  <p>Ошибка доступа по адресу {{ path }}</p>
+  <p>{{ msg }}</p>
+  <a href="{% url 'posts:main' %}">Идите на главную</a>
+{% endblock %}
