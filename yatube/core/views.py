@@ -6,4 +6,9 @@ def get_page_not_found(request, exception):
 
 
 def get_csrf_failure(request, reason=''):
-    return render(request, 'core/403csrf.html')
+    return render(request, 'core/419csrf.html')
+
+def get_permission_denied(request, exception):
+    context = {'path': request.path,
+               'msg': exception}
+    return render(request, 'core/403.html', context, status=403)

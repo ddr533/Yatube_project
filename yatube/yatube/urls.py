@@ -19,6 +19,6 @@ if settings.DEBUG:
     )
     urlpatterns += (path('__debug__/', include(debug_toolbar.urls)),)
 
-
 handler404 = 'core.views.get_page_not_found'
-handler403 = 'core.views.get_csrf_failure'
+handler419 = 'core.views.get_csrf_failure'
+handler403 = 'core.views.get_permission_denied'
