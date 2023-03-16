@@ -2,7 +2,9 @@ from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.exceptions import PermissionDenied
 from django.test import Client, TestCase
+from django.urls import reverse
 
 from ..models import Group, Post
 
@@ -27,9 +29,6 @@ class TestPostsURLs(TestCase):
         )
 
     def setUp(self):
-        """Создает экземляры клиента с анонимным пользователем,
-        авторизованным пользователем, авторизованным автором записи.
-        """
         self.guest_client = Client()
         self.auth_author = Client()
         self.auth_not_author = Client()
@@ -38,7 +37,8 @@ class TestPostsURLs(TestCase):
         cache.clear()
 
     def test_urls_availability_for_guest_client(self):
-        """Проверка доступности страниц для всех пользователей.
+        """
+        Проверка доступности страниц для всех типов пользователей.
         Запрос к несуществующей странице возвращает код 404.
         """
         users = (self.auth_author, self.guest_client, self.auth_not_author)
@@ -59,10 +59,13 @@ class TestPostsURLs(TestCase):
                                      expected_status_code)
 
     def test_create_page_availability_for_auth_user(self):
-        """Страница для создания записи доступна
+        """
+        Страница для создания записи и страница с подписками доступна
         авторизованному пользователю.
         """
         response = self.auth_not_author.get('/create/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        response = self.auth_not_author.get('/follow/')
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_edit_url_availability_for_author(self):
@@ -71,7 +74,8 @@ class TestPostsURLs(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_redirect_for_quest_client(self):
-        """Перенаправление неавторизованных пользователей со страницы создания,
+        """
+        Перенаправление неавторизованных пользователей со страницы создания,
         редактирования, комментирования и удаления записей
         на страницу авторизации.
         """
@@ -88,9 +92,10 @@ class TestPostsURLs(TestCase):
                                      (f'/auth/login/?next={address}'))
 
     def test_pages_not_avaliable_for_non_author(self):
-        """Страница по адресу posts/<id>/edit/ и posts/<id>/delete/
-        перенаправит пользователя, не являющегося автором записи,
-        на страницу этой записи.
+        """
+        Страница по адресу posts/<id>/edit/ и posts/<id>/delete/
+        вызовет ошибку PermissionDenied() при запросе от пользователя, не
+        являющего автором.
         """
         urls_for_redirect_non_author = (
             '/posts/1/edit/',
@@ -99,10 +104,11 @@ class TestPostsURLs(TestCase):
         for address in urls_for_redirect_non_author:
             with self.subTest(address=address):
                 response = self.auth_not_author.get(address, follow=True)
-                self.assertRedirects(response, '/posts/1/')
+                self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_delete_url_availability_for_author(self):
-        """Страница по адресу /posts/<post_id>/delete/ перенаправит автора
+        """
+        Страница по адресу /posts/<post_id>/delete/ перенаправит автора
         записи на страницу его профиля.
         """
         response = self.auth_author.get('/posts/1/delete/', follow=True)
@@ -118,6 +124,7 @@ class TestPostsURLs(TestCase):
             '/create/': 'posts/create_post.html',
             '/posts/1/edit/': 'posts/create_post.html',
             '/search/?text=test/': 'posts/index.html',
+            '/follow/': 'posts/follow.html',
         }
         for address, template in templates_url_names.items():
             with self.subTest(address=address):
