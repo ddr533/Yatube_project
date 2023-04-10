@@ -36,12 +36,15 @@ class TestPostsPages(TestCase):
     @classmethod
     def setUpClass(cls):
         """
-        Создаем 3 тестовых записи с различными авторами,
-        группами, картинкой и комментарием.
+        Создание данных для тестов.
+
+        Создаем различных пользователей, три тестовых записи с различными
+        авторами, группами, картинкой и комментарием.
         """
+
         super().setUpClass()
         image = cls.get_image_for_test('post.bmp')
-        # Пользователь, который будет подписываться
+        # Пользователь, который будет подписываться.
         cls.user = User.objects.create_user(username='test_user')
         # Пользователь, на которого будет подписываться cls.user
         cls.following_user = User.objects.create_user(username='following')
@@ -77,6 +80,8 @@ class TestPostsPages(TestCase):
 
     def test_auth_user_can_follow_and_unfollow(self):
         """
+        Тестирование функции follow_index.
+
         Авторизованный пользователь может подписываться
         на других пользователей и удалять их из подписок.
         """
@@ -102,12 +107,15 @@ class TestPostsPages(TestCase):
 
     def test_new_following_post_on_folowers_page(self):
         """
+        Тестирование функции profile_follow.
+
         Новая запись отображается на странице подписчиков
         и не отображается на странице подписок других пользователей.
         """
+
         # Подписываемся на пользователя cls.following_user.
-        self.auth_user.get(reverse(
-            'posts:profile_follow',
+        self.auth_user.get(
+            reverse('posts:profile_follow',
             kwargs={'username': self.following_user.username}))
         # Считаем число записей на странице
         # follow пользователя cls.following_user
@@ -133,6 +141,8 @@ class TestPostsPages(TestCase):
 
     def test_user_cant_follow_on_yourself(self):
         """
+        Тестирование функции profile_follow.
+
         Пользователь не может подписаться на самого себя.
         """
         folowing_count_after = Follow.objects.filter(user=self.user).count()
@@ -144,9 +154,9 @@ class TestPostsPages(TestCase):
 
     def test_cache_working_on_main_page(self):
         """
-        Работает кэш на главной странице.
-        Удаленная запись сохраняется в кэше
-        и выводится на главную страницу.
+        Тестирование работы кэша на главной странице.
+
+        Удаленная запись сохраняется в кэше и выводится на главную страницу.
         """
         new_post = Post.objects.create(author=self.user, text='test_cache')
         response = self.auth_user.get(reverse('posts:main'))
@@ -162,6 +172,8 @@ class TestPostsPages(TestCase):
 
     def test_pages_with_page_obj_has_image(self):
         """
+        Тестирование функции index, group_posts, profile.
+
         На главную страницу, страницу группы и в профайл автора
         в словарь context передается запись с картинкой (cls.post_3).
         """
@@ -178,8 +190,10 @@ class TestPostsPages(TestCase):
 
     def test_post_detail_page_has_correct_context(self):
         """
+        Тестирование функции post_detail.
+
         На страницу записи в словарь context передается одна запись (cls.post_3)
-        с картинкой, комментарии и форма для комментариев.
+        с картинкой, комментарием и формой для комментариев.
         """
         post_detail_page = reverse('posts:post_detail',
                                    kwargs={'post_id': self.post_3.id})
@@ -197,8 +211,10 @@ class TestPostsPages(TestCase):
 
     def test_pages_uses_correct_template(self):
         """
+        Тестирование имен шаблонов во вью функциях.
+
         Во view-функциях используются соответствующие шаблоны.
-        Переопределена страница 404.
+        Переопределен шаблон для страницы 404.
         """
         templates_page_names = {
             '/not_exists_page/': 'core/404.html',
@@ -222,8 +238,10 @@ class TestPostsPages(TestCase):
 
     def test_main_page_has_correct_context(self):
         """
+        Тестирование функции index.
+
         На главной странице отображаются правильные данные
-        из словаря context - список всех постов.
+        из словаря context - список из 3 записей.
         """
         response = self.auth_user.get(reverse('posts:main'))
         self.assertEqual(response.context['page_obj'].paginator.count, 3)
@@ -233,6 +251,8 @@ class TestPostsPages(TestCase):
 
     def test_group_list_has_correct_context(self):
         """
+        Тестирование функции group_posts.
+
         На странице группы отображается правильные данные
         из словаря context - отфильтрованный по группе список постов.
         """
@@ -245,8 +265,10 @@ class TestPostsPages(TestCase):
 
     def test_user_profile_has_correct_context(self):
         """
-        На странице пользователя отображается корректные данные
-        из словаря context - отфильтрованный по автору список постов.
+        Тестирование функции profile.
+
+        На странице пользователя self.user отображается корректные данные
+        из словаря context - только записи self.user.
         """
         response = self.auth_user.get(
             reverse('posts:profile', kwargs={'username': self.user.username}))
@@ -256,7 +278,11 @@ class TestPostsPages(TestCase):
                 for post in response.context['page_obj']))
 
     def test_post_edit_page_has_correct_context(self):
-        """На страницу редактирования записи передается форма."""
+        """
+        Тестирование функции post_edit.
+
+        На страницу редактирования записи передается соответствующая форма.
+        """
         response = self.auth_user.get(
             reverse('posts:post_edit', kwargs={'post_id': self.post_1.id}))
         form_fields = {
@@ -272,7 +298,11 @@ class TestPostsPages(TestCase):
         self.assertEqual(response.context['form'].instance, self.post_1)
 
     def test_post_create_page_has_correct_context(self):
-        """На страницу создания записи передается форма."""
+        """
+        Тестирование функции post_create.
+
+        На страницу создания записи передается соответствующая форма.
+        """
         response = self.auth_user.get(reverse('posts:post_create'))
         form_fields = {
             'text': forms.fields.CharField,
@@ -284,10 +314,7 @@ class TestPostsPages(TestCase):
                 self.assertIsInstance(form_field, expected)
 
     def test_post_with_group_show_on_pages(self):
-        """
-        Записи с объявленной группой отображаются на главной странице,
-        странице автора и странице группы.
-        """
+        """Записи с объявленной группой отображаются на страницах."""
         pages_with_post_with_group_1 = (
             reverse('posts:main'),
             reverse('posts:group_list', kwargs={'slug': self.group_2.slug}),
@@ -301,6 +328,8 @@ class TestPostsPages(TestCase):
 
     def test_group_list_has_only_own_posts(self):
         """
+        Тестирование функции group_posts.
+
         На странице группы отображатся только принадлежащие
         этой группе записи.
         """
@@ -328,6 +357,8 @@ class TestPostsPages(TestCase):
 
     def test_non_author_cant_delete_post(self):
         """
+        Тестирование функции post_delete.
+
         Авторизованный пользователь, не являющийся автором,
         не может удалить запись.
         """
@@ -359,7 +390,11 @@ class TestPostsPages(TestCase):
         self.assertEqual(count_posts_after_del, count_posts_till_del)
 
     def test_text_search(self):
-        """Работает поиск по всем записям."""
+        """
+        Тестирование функции get_search_result.
+
+        Работает поиск по всем записям.
+        """
         Post.objects.create(author=self.user, text='is_newwwws_post')
         response = self.auth_user.get('/search/?text=new')
         count_posts = response.context.get('page_obj').paginator.count
@@ -391,6 +426,8 @@ class TestPaginatorViews(TestCase):
 
     def test_paginator_for_pages(self):
         """
+        Тестирование функции get_page_obj_paginator.
+
         Paginator работает и выводит по 10 (settings.POSTS_PER_PAGE)
         записей на страницу.
         """

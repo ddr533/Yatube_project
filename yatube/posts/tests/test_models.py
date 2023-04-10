@@ -46,7 +46,7 @@ class PostModelTest(TestCase):
                 self.assertEqual(expected_str_value, str(model_obj))
 
     def test_post_field_verbose_name(self):
-        """verbose_name полей модели Post совпадает с ожидаемым значением."""
+        """В модели Post verbose_name полей совпадает с ожидаемым значением."""
         field_verbose_name = {
             'text': 'Текст поста',
             'group': 'Группа',
@@ -59,7 +59,7 @@ class PostModelTest(TestCase):
                     expected_verbose_name)
 
     def test_post_field_help_text(self):
-        """help_text полей модели Post совпадает с ожидаемым."""
+        """В модели Post help_text совпадает с ожидаемым значением."""
         field_help_text = {
             'text': 'Введите текст поста',
             'group': 'Группа, к которой будет относиться пост',
@@ -71,8 +71,11 @@ class PostModelTest(TestCase):
                     expected_help_text)
 
     def test_get_absolute_url(self):
-        """Метод get_absolute_url в моделях Group и Post возвращает ссылку
-        на страницу группы и детали записи соответственно.
+        """
+        Тестирование метода get_absolute_url в моделях Group и Post.
+
+        В модели Group метод возвращает ссылку на страницу группы.
+        В модели Post метод возвращает страницу отдельной записи.
         """
         expected_urls_by_method = {
             self.post: reverse('posts:post_detail',

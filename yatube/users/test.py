@@ -19,10 +19,7 @@ class TestUserUrls(TestCase):
         self.auth_user.force_login(self.user)
 
     def test_urls_status_code_for_auth_user(self):
-        """
-        Пользовательские служебные страницы имеют
-        правильные response коды.
-        """
+        """Тестирование response кодов."""
         pages_code = {
             reverse('users:password_change'): HTTPStatus.OK,
             reverse('users:set_user_info'): HTTPStatus.OK,
@@ -80,9 +77,7 @@ class TestUserPages(TestCase):
         self.assertRedirects(response, '/auth/login/?next=/auth/set_user_info/')
 
     def test_user_signup_page_has_correct_context(self):
-        """На страницу регистрации нового пользователя
-        передается правильная форма.
-        """
+        """На страницу регистрации нового пользователя передается форма."""
         form_fields = {
             'first_name': forms.fields.CharField,
             'last_name': forms.fields.CharField,
@@ -98,7 +93,7 @@ class TestUserPages(TestCase):
                 self.assertIsInstance(form_field, expected_type)
 
     def test_set_user_info_has_correct_form(self):
-        """На страницу профиля пользователя передаются правильная форма."""
+        """На страницу профиля пользователя передаются форма."""
         form_fields = {
             'timezone': forms.fields.TypedChoiceField,
         }

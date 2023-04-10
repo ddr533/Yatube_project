@@ -102,6 +102,8 @@ class TestPostsForms(TestCase):
 
     def test_add_comment(self):
         """
+        Тестирование функции add_comment.
+
         После успешного добавления комментарий
         появляется на странице записи.
         """

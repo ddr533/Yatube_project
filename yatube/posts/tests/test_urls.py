@@ -39,6 +39,7 @@ class TestPostsURLs(TestCase):
     def test_urls_availability_for_guest_client(self):
         """
         Проверка доступности страниц для всех типов пользователей.
+
         Запрос к несуществующей странице возвращает код 404.
         """
         users = (self.auth_author, self.guest_client, self.auth_not_author)
@@ -60,6 +61,8 @@ class TestPostsURLs(TestCase):
 
     def test_create_page_availability_for_auth_user(self):
         """
+        Тестирование доступности страниц авторизованному пользователю.
+
         Страница для создания записи и страница с подписками доступна
         авторизованному пользователю.
         """
@@ -75,6 +78,8 @@ class TestPostsURLs(TestCase):
 
     def test_redirect_for_quest_client(self):
         """
+        Тестирование редиректов для неавторизованных пользователей.
+
         Перенаправление неавторизованных пользователей со страницы создания,
         редактирования, комментирования и удаления записей
         на страницу авторизации.
@@ -93,6 +98,8 @@ class TestPostsURLs(TestCase):
 
     def test_pages_not_avaliable_for_non_author(self):
         """
+        Тестирование доступности страниц для не авторов записей.
+
         Страница по адресу posts/<id>/edit/ и posts/<id>/delete/
         вызовет ошибку PermissionDenied() при запросе от пользователя, не
         являющего автором.
@@ -108,6 +115,8 @@ class TestPostsURLs(TestCase):
 
     def test_delete_url_availability_for_author(self):
         """
+        Тестирование редиректа при удалении записи.
+
         Страница по адресу /posts/<post_id>/delete/ перенаправит автора
         записи на страницу его профиля.
         """
