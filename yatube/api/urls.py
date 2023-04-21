@@ -1,16 +1,22 @@
 from django.urls import path, include
-from rest_framework import routers
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf.urls import url
+from rest_framework.routers import DefaultRouter
 
+from api.views import GroupViewSet
 
 app_name = 'api'
+
+router_v1 = DefaultRouter()
+router_v1.register('groups', GroupViewSet, basename='group')
+
 
 urlpatterns = [
     path('v1/auth/', include('djoser.urls')),
     path('v1/auth/', include('djoser.urls.jwt')),
+    path('v1/', include(router_v1.urls)),
 ]
 
 
