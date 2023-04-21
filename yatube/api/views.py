@@ -23,8 +23,6 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
     def get_serializer_class(self):
-            if self.action == 'list':
-                return GroupSerializer
-            elif self.action == 'retrieve':
-                return GroupDetailSerializer
-            return super().get_serializer_class()
+        if self.action == 'retrieve':
+            return GroupDetailSerializer
+        return GroupSerializer
