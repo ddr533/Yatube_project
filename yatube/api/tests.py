@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 from rest_framework import status
 
-from posts.models import Group
+from posts.models import Group, Post
 
 
 User = get_user_model()
@@ -30,6 +32,7 @@ class TestMyAPI(APITestCase):
             description='description',
             slug='slug'
         )
+        cls.post = Post.objects.create(text='test_post', author=cls.user)
 
     def setUp(self):
         self.user_client = APIClient()
@@ -40,12 +43,16 @@ class TestMyAPI(APITestCase):
 
 
     def test_user_access_to_group_list_and_detail(self):
-        """Пользователи могут осуществлять GET запросы к модели Group."""
+        """Проверка GET запросов к ресурсам от анонимных и аутентифицированных
+        пользователей."""
         users = (self.anon_client, self.user_client)
         urls = (
             (reverse('api:group-list'), status.HTTP_200_OK),
             (reverse('api:group-detail', kwargs={'pk': self.group.id}),
              status.HTTP_200_OK),
+            (reverse('api:post-list'), status.HTTP_200_OK),
+            (reverse('api:post-detail', kwargs={'pk': self.post.id}),
+            status.HTTP_200_OK),
         )
         for user in users:
             for url, expected_status_code in urls:
@@ -62,18 +69,51 @@ class TestMyAPI(APITestCase):
         }
         response = self.admin_client.post(reverse('api:group-list'), data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
         response = self.admin_client.put(
             reverse('api:group-detail', kwargs={'pk': 2}), data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response = self.admin_client.delete(reverse('api:group-detail',
-                                                    kwargs={'pk': 2}))
+
+        response = self.admin_client.delete(
+            reverse('api:group-detail', kwargs={'pk': 2}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         response = self.user_client.post(reverse('api:group-list'), data=data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
         response = self.user_client.put(
             reverse('api:group-detail', kwargs={'pk': 2}), data=data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        response = self.user_client.delete(reverse('api:group-detail',
-                                                    kwargs={'pk': 1}))
+
+        response = self.user_client.delete(
+            reverse('api:group-detail', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_insecure_request_for_post(self):
+        """Создавать запись может только аутентифицированный пользователь.
+         Изменять запись может только автор."""
+        data = {
+            'text': 'test_1',
+            'group': self.group.id,
+        }
+        response = self.user_client.post(reverse('api:post-list'), data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.user_client.put(
+            reverse('api:post-detail', kwargs={'pk': 2}), data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.admin_client.put(
+            reverse('api:post-detail', kwargs={'pk': 2}), data=data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.admin_client.delete(
+            reverse('api:post-detail', kwargs={'pk': 2}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.user_client.delete(
+            reverse('api:post-detail', kwargs={'pk': 2}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        response = self.anon_client.post(reverse('api:post-list'), data=data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
