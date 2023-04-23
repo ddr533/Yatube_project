@@ -31,6 +31,7 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     search_fields = ('author__username', 'text')
     filterset_fields = ('author__username', 'group')
+    ordering_fields = '__all__'
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
