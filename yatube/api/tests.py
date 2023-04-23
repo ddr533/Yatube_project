@@ -206,7 +206,7 @@ class TestMyAPI(APITestCase):
                          status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_user_cant_follow_itself(self):
-        """Нельзя подписаться на себя."""
+        """Нельзя подписаться на самого себя."""
         response = self.user_client.post(
             reverse('api:follow-list'), data={'author': self.user})
         self.assertEqual(response.status_code,
