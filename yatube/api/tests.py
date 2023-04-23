@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 from rest_framework import status
 
-from posts.models import Group, Post
+from posts.models import Group, Post, Comment, Follow
 
 
 User = get_user_model()
@@ -32,7 +32,10 @@ class TestMyAPI(APITestCase):
             description='description',
             slug='slug'
         )
-        cls.post = Post.objects.create(text='test_post', author=cls.user)
+        cls.post = Post.objects.create(text='post', author=cls.user)
+        cls.comment = Comment.objects.create(text='comment',
+                                             post=cls.post,
+                                             author=cls.user)
 
     def setUp(self):
         self.user_client = APIClient()
@@ -53,6 +56,11 @@ class TestMyAPI(APITestCase):
             (reverse('api:post-list'), status.HTTP_200_OK),
             (reverse('api:post-detail', kwargs={'pk': self.post.id}),
             status.HTTP_200_OK),
+            (reverse('api:comment-list', kwargs={'post_id': self.post.id}),
+             status.HTTP_200_OK),
+            (reverse('api:comment-detail',
+                     kwargs={'post_id': self.post.id, 'pk': self.comment.id}),
+             status.HTTP_200_OK),
         )
         for user in users:
             for url, expected_status_code in urls:
@@ -116,4 +124,40 @@ class TestMyAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         response = self.anon_client.post(reverse('api:post-list'), data=data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_insecure_request_for_comment(self):
+        """Комментировать может только аутентифицированный пользователь.
+         Изменять комментарии может только автор."""
+        data = {
+            'text': 'comment_1',
+        }
+        response = self.user_client.post(
+            reverse('api:comment-list',
+                    kwargs={'post_id': self.post.id}), data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.user_client.put(
+            reverse('api:comment-detail',
+                    kwargs={'post_id': self.post.id, 'pk': 1}), data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.admin_client.put(
+            reverse('api:comment-detail',
+                    kwargs={'post_id': self.post.id, 'pk': 1}), data=data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.admin_client.delete(
+            reverse('api:comment-detail',
+                    kwargs={'post_id': self.post.id, 'pk': 1}), data=data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.user_client.delete(
+            reverse('api:comment-detail',
+                    kwargs={'post_id': self.post.id, 'pk': 1}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        response = self.anon_client.post(
+            reverse('api:comment-list',
+                    kwargs={'post_id': self.post.id}), data=data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

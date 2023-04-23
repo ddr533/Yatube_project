@@ -1,11 +1,12 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.serializers import (GroupSerializer, GroupDetailSerializer,
-                             PostSerializer)
+                             PostSerializer, CommentSerializer)
 
 from api.permissions import AdminOnlyPermission, IsAuthorOrReadOnly
-from posts.models import Group, Post
+from posts.models import Group, Post, Comment, Follow
 from rest_framework.pagination import LimitOffsetPagination
 
 
@@ -54,3 +55,32 @@ class GroupViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return GroupDetailSerializer
         return GroupSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    Комментарии к записям.
+
+    Комментировать может только авторизованный пользователь.
+    Изменять комментарии может только их автор.
+    """
+
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthorOrReadOnly, )
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,
+                       filters.OrderingFilter)
+    search_fields = ('author__username', 'text', '^created')
+    filterset_fields = ('author__username', )
+    ordering_fields = '__all__'
+    pagination_class = None
+
+    def perform_create(self, serializer):
+        post_id = self.kwargs.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+        serializer.save(author=self.request.user, post=post)
+
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+        return post.comments.all()

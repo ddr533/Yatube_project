@@ -4,7 +4,7 @@ import uuid
 import requests
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-from posts.models import Group, Post
+from posts.models import Group, Post, Comment, Follow
 
 
 class GetImage(serializers.ImageField):
@@ -40,3 +40,12 @@ class GroupDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(slug_field='username', read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('post',)
