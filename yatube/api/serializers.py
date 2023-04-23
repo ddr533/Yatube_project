@@ -28,6 +28,14 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FollowSerializer(serializers.ModelSerializer):
+    author = serializers.CharField()
+
+    class Meta:
+        model = Follow
+        fields = ('id', 'author')
+
+
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:

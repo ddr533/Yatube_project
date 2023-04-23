@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import CheckConstraint, F, Q
+from django.db.models import CheckConstraint,UniqueConstraint, F, Q
 from django.urls import reverse
 
 User = get_user_model()
@@ -115,7 +115,10 @@ class Follow(models.Model):
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
         constraints = [
-            CheckConstraint(check=~Q(user=F('author')), name='user!=author')
+            CheckConstraint(check=~Q(user=F('author')),
+                            name='user!=author'),
+            UniqueConstraint(fields=('user', 'author'),
+                             name='unique_name_and_author')
         ]
 
     def __str__(self):

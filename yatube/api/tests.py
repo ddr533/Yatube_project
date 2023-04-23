@@ -36,6 +36,7 @@ class TestMyAPI(APITestCase):
         cls.comment = Comment.objects.create(text='comment',
                                              post=cls.post,
                                              author=cls.user)
+        cls.follow = Follow.objects.create(user=cls.user, author=cls.admin)
 
     def setUp(self):
         self.user_client = APIClient()
@@ -99,7 +100,7 @@ class TestMyAPI(APITestCase):
 
     def test_insecure_request_for_post(self):
         """Создавать запись может только аутентифицированный пользователь.
-         Изменять запись может только автор."""
+        Изменять запись может только автор."""
         data = {
             'text': 'test_1',
             'group': self.group.id,
@@ -161,3 +162,61 @@ class TestMyAPI(APITestCase):
             reverse('api:comment-list',
                     kwargs={'post_id': self.post.id}), data=data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_request_for_follow(self):
+        """Получить список подписок и подписаться могут только
+        аутентифицированные пользователи. Удалить подписку может
+        только подписчик."""
+        response = self.anon_client.get(reverse('api:follow-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.user_client.get(reverse('api:follow-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.anon_client.post(
+            reverse('api:follow-list'), data={'author': self.user})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        response = self.admin_client.post(
+            reverse('api:follow-list'), data={'author': self.user.username})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        #Пытаемся удалить чужую подписку
+        response = self.admin_client.delete(
+            reverse('api:follow-detail', kwargs={'pk': self.follow.id}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        #Удаляем свою подписку
+        response = self.admin_client.delete(
+            reverse('api:follow-detail', kwargs={'pk': 2}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_put_patch_method_not_allow_for_follow(self):
+        """Методы PUT и PATCH не доступны пользователям
+        для работы с подписками."""
+        response = self.user_client.put(
+            reverse('api:follow-detail', kwargs={'pk': self.follow.id}),
+            data = {'author': 'test'})
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+        response = self.user_client.patch(
+            reverse('api:follow-detail', kwargs={'pk': self.follow.id}),
+            data={'author': 'test'})
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_user_cant_follow_itself(self):
+        """Нельзя подписаться на себя."""
+        response = self.user_client.post(
+            reverse('api:follow-list'), data={'author': self.user})
+        self.assertEqual(response.status_code,
+                                 status.HTTP_400_BAD_REQUEST)
+
+    def test_user_cant_duplicate_follow(self):
+        """Нельзя оформлять дубликат подписки."""
+        response = self.user_client.post(
+            reverse('api:follow-list'), data={'author': self.admin})
+        self.assertEqual(response.status_code,
+                         status.HTTP_400_BAD_REQUEST)
+
+

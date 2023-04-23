@@ -1,5 +1,6 @@
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        IsAdminUser, SAFE_METHODS)
+                                        IsAdminUser, SAFE_METHODS,
+                                        IsAuthenticated)
 
 
 class AdminOnlyPermission(IsAuthenticatedOrReadOnly):
@@ -20,3 +21,13 @@ class IsAuthorOrReadOnly(IsAuthenticatedOrReadOnly):
 
     def has_object_permission(self, request, view, obj):
         return request.method in SAFE_METHODS or obj.author == request.user
+
+
+class IsAuthenticatedAuthor(IsAuthenticated):
+    """Доступ имеет только аутентифицированный пользователь.
+    Получать и изменять информацию о подписках может только подписчик."""
+
+    message = 'Управлять подпиской может только подписчик.'
+
+    def has_object_permission(self, request, view, obj):
+        return request.method in SAFE_METHODS or obj.user == request.user

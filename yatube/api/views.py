@@ -1,13 +1,18 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, serializers, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 
 from api.serializers import (GroupSerializer, GroupDetailSerializer,
-                             PostSerializer, CommentSerializer)
+                             PostSerializer, CommentSerializer,
+                             FollowSerializer)
 
-from api.permissions import AdminOnlyPermission, IsAuthorOrReadOnly
-from posts.models import Group, Post, Comment, Follow
+from api.permissions import (AdminOnlyPermission, IsAuthorOrReadOnly,
+                             IsAuthenticatedAuthor)
+from posts.models import Group, Post, Comment, Follow, User
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.viewsets import GenericViewSet
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -65,7 +70,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     Изменять комментарии может только их автор.
     """
 
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.none()
     serializer_class = CommentSerializer
     permission_classes = (IsAuthorOrReadOnly, )
     filter_backends = (filters.SearchFilter, DjangoFilterBackend,
@@ -84,3 +89,41 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = self.kwargs.get('post_id')
         post = get_object_or_404(Post, id=post_id)
         return post.comments.all()
+
+
+class FollowViewSet(GenericViewSet,
+                    mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    mixins.DestroyModelMixin):
+    """
+    Информация о подписках.
+
+    Получить список подписок, создавать и удалять свои подписки может только
+    авторизованный пользователь.
+    """
+
+    queryset = Follow.objects.none()
+    serializer_class = FollowSerializer
+    permission_classes = (IsAuthenticatedAuthor, )
+    pagination_class = None
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('author__username',)
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.follower.all()
+
+    def perform_create(self, serializer):
+        try:
+            following = User.objects.get(
+                username=serializer.validated_data['author'])
+            serializer.save(user=self.request.user, author=following)
+
+        except ObjectDoesNotExist as e:
+            raise serializers.ValidationError(
+                f'Автора с таким именем нет в базе, {e}')
+
+        except IntegrityError as e:
+            raise serializers.ValidationError(
+                f'Нельзя подписываться на самого себя и создавать'
+                f' одинаковые подписки, {e}')
