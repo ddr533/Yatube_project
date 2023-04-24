@@ -5,12 +5,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
-
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APIClient, APITestCase
 
-from posts.models import Group, Post, Comment, Follow
-
+from posts.models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -67,7 +65,7 @@ class TestMyAPI(APITestCase):
              status.HTTP_200_OK),
             (reverse('api:post-list'), status.HTTP_200_OK),
             (reverse('api:post-detail', kwargs={'pk': self.post.id}),
-            status.HTTP_200_OK),
+             status.HTTP_200_OK),
             (reverse('api:comment-list', kwargs={'post_id': self.post.id}),
              status.HTTP_200_OK),
             (reverse('api:comment-detail',
@@ -78,7 +76,8 @@ class TestMyAPI(APITestCase):
             for url, expected_status_code in urls:
                 with self.subTest(url=url, status_code=expected_status_code):
                     response = user.get(url)
-                    self.assertEqual(response.status_code, expected_status_code)
+                    self.assertEqual(response.status_code,
+                                     expected_status_code)
 
     def test_insecure_request_for_group(self):
         """Создавать, изменять и удалять группу может только администратор."""
@@ -192,12 +191,12 @@ class TestMyAPI(APITestCase):
             reverse('api:follow-list'), data={'author': self.user.username})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        #Пытаемся удалить чужую подписку
+        # Пытаемся удалить чужую подписку
         response = self.admin_client.delete(
             reverse('api:follow-detail', kwargs={'pk': self.follow.id}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-        #Удаляем свою подписку
+        # Удаляем свою подписку
         response = self.admin_client.delete(
             reverse('api:follow-detail', kwargs={'pk': 2}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -207,7 +206,7 @@ class TestMyAPI(APITestCase):
         для работы с подписками."""
         response = self.user_client.put(
             reverse('api:follow-detail', kwargs={'pk': self.follow.id}),
-            data = {'author': 'test'})
+            data={'author': 'test'})
         self.assertEqual(response.status_code,
                          status.HTTP_405_METHOD_NOT_ALLOWED)
         response = self.user_client.patch(
@@ -221,7 +220,7 @@ class TestMyAPI(APITestCase):
         response = self.user_client.post(
             reverse('api:follow-list'), data={'author': self.user})
         self.assertEqual(response.status_code,
-                                 status.HTTP_400_BAD_REQUEST)
+                         status.HTTP_400_BAD_REQUEST)
 
     def test_user_cant_duplicate_follow(self):
         """Нельзя оформлять дубликат подписки."""
@@ -233,9 +232,9 @@ class TestMyAPI(APITestCase):
     def test_post_note_with_image_in_url(self):
         """Успешно размещается запись с картинкой.
         Картинка передается как ссылка на сторонний ресурс."""
-        image_url = (f'https://png.pngtree.com/element_our/20190524/ourmid/'
-                     f'pngtree-hand-painted-watercolor-floral-ornament-png-'
-                     f'free-illustration-image_1106539.jpg')
+        image_url = ('https://png.pngtree.com/element_our/20190524/ourmid/'
+                     'pngtree-hand-painted-watercolor-floral-ornament-png-'
+                     'free-illustration-image_1106539.jpg')
         data = {'text': 'new_text',
                 'image': image_url}
 

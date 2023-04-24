@@ -61,6 +61,6 @@ urlpatterns = [
     ),
     path(
         'set_user_info/', views.set_user_info,
-         name='set_user_info'),
+        name='set_user_info'),
 
 ]

@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
 from posts.models import Group
 from users.models import UserProfile
-from django.utils import timezone
 
 
 @login_required
@@ -18,7 +18,8 @@ def get_group_chat(request, group_slug):
     time_zone = (timezone.get_current_timezone().zone
                  if not profile else profile.timezone)
     group = get_object_or_404(Group, slug=group_slug)
-    messages = group.group_chat.select_related('user').order_by('-date_added')[:20]
+    messages = (group.group_chat.select_related('user').
+                order_by('-date_added')[:20])
     messages = list(reversed(messages))
     context = {'messages': messages, 'group': group, 'time_zone': time_zone}
     return render(request, 'chat/group_chat.html', context)

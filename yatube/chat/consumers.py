@@ -4,8 +4,9 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 
-from .models import Message
 from posts.models import Group
+
+from .models import Message
 
 
 class ChatConsumer(AsyncWebsocketConsumer):

@@ -2,7 +2,6 @@ import pytz
 from django.contrib.auth import get_user_model
 from django.db import models
 
-
 TIMEZONES = tuple(zip(pytz.all_timezones, pytz.all_timezones))
 
 User = get_user_model()

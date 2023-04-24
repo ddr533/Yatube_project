@@ -1,6 +1,6 @@
 from django.db import models
-from posts.models import Group, User
 
+from posts.models import Group, User
 
 
 class Message(models.Model):
@@ -16,4 +16,3 @@ class Message(models.Model):
 
     def __str__(self):
         return str(self.id)
-

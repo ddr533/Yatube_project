@@ -27,4 +27,3 @@ def set_user_info(request):
         profile.save()
         return redirect('posts:main')
     return render(request, 'users/set_user_info.html', {'form': form})
-

@@ -1,6 +1,6 @@
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        IsAdminUser, SAFE_METHODS,
-                                        IsAuthenticated)
+from rest_framework.permissions import (SAFE_METHODS, IsAdminUser,
+                                        IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 
 
 class AdminOnlyPermission(IsAuthenticatedOrReadOnly):

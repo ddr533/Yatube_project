@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import Group, Post, Comment, Follow
+from ..models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -12,7 +12,8 @@ class PostModelTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='test_user')
-        cls.following_user = User.objects.create_user(username='following_user')
+        cls.following_user = User.objects.create_user(
+            username='following_user')
         cls.group = Group.objects.create(
             title='test_group',
             slug='test_slug',
@@ -30,7 +31,7 @@ class PostModelTest(TestCase):
         cls.comment = Comment.objects.create(
             post=cls.post,
             author=cls.user,
-            text='comment'*5
+            text='comment' * 5
         )
 
     def test_models_have_correct_object_names(self):

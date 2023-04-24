@@ -1,10 +1,8 @@
-from django.urls import path, include, reverse
-from rest_framework import permissions
+from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-
 from rest_framework.routers import DefaultRouter
 
-from api.views import GroupViewSet, PostViewSet, CommentViewSet, FollowViewSet
+from api.views import CommentViewSet, FollowViewSet, GroupViewSet, PostViewSet
 
 app_name = 'api'
 

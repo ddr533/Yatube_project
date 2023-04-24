@@ -10,20 +10,20 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
 
 User = get_user_model()
 
-#Декоратор для тестирования скорости выполнения функций
+
+# Декоратор для тестирования скорости выполнения функций
 def execute_time(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         res = func(*args, **kwargs)
         stop = time.time()
-        print(stop-start)
+        print(stop - start)
         return res
     return wrapper
 

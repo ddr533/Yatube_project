@@ -12,7 +12,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from PIL import Image
 
-from ..models import Group, Post, Follow, Comment
+from ..models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -116,7 +116,7 @@ class TestPostsPages(TestCase):
         # Подписываемся на пользователя cls.following_user.
         self.auth_user.get(
             reverse('posts:profile_follow',
-            kwargs={'username': self.following_user.username}))
+                    kwargs={'username': self.following_user.username}))
         # Считаем число записей на странице
         # follow пользователя cls.following_user
         response = self.auth_user.get(reverse('posts:follow_index'))
@@ -192,8 +192,8 @@ class TestPostsPages(TestCase):
         """
         Тестирование функции post_detail.
 
-        На страницу записи в словарь context передается одна запись (cls.post_3)
-        с картинкой, комментарием и формой для комментариев.
+        На страницу записи в словарь context передается одна запись
+        (cls.post_3) с картинкой, комментарием и формой для комментариев.
         """
         post_detail_page = reverse('posts:post_detail',
                                    kwargs={'post_id': self.post_3.id})
@@ -352,7 +352,8 @@ class TestPostsPages(TestCase):
             'posts:profile', kwargs={'username': new_post.author.username}))
         response = self.auth_user.get(reverse(
             'posts:profile', kwargs={'username': new_post.author}))
-        count_posts_after_del = response.context.get('page_obj').paginator.count
+        count_posts_after_del = (response.context.get('page_obj')
+                                 .paginator.count)
         self.assertEqual(count_posts_after_del, count_posts_till_del - 1)
 
     def test_non_author_cant_delete_post(self):
@@ -371,7 +372,8 @@ class TestPostsPages(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         response = self.auth_lonely_user.get(reverse(
             'posts:profile', kwargs={'username': new_post.author}))
-        count_posts_after_del = response.context.get('page_obj').paginator.count
+        count_posts_after_del = (response.context.get('page_obj')
+                                 .paginator.count)
         self.assertEqual(count_posts_after_del, count_posts_till_del)
 
     def test_non_auth_user_cant_delete_post(self):
@@ -386,7 +388,8 @@ class TestPostsPages(TestCase):
             response, f'/auth/login/?next=/posts/{new_post.id}/delete/')
         response = self.not_auth_user.get(reverse(
             'posts:profile', kwargs={'username': new_post.author}))
-        count_posts_after_del = response.context.get('page_obj').paginator.count
+        count_posts_after_del = (response.context.get('page_obj')
+                                 .paginator.count)
         self.assertEqual(count_posts_after_del, count_posts_till_del)
 
     def test_text_search(self):
@@ -403,7 +406,7 @@ class TestPostsPages(TestCase):
 
 
 @override_settings(CACHES={
-    'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}})
+    'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache', }})
 class TestPaginatorViews(TestCase):
     @classmethod
     def setUpClass(cls):

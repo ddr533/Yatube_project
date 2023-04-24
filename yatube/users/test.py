@@ -7,7 +7,6 @@ from django.urls import reverse
 
 from .models import UserProfile
 
-
 User = get_user_model()
 
 
@@ -27,7 +26,6 @@ class TestUserUrls(TestCase):
             reverse('users:login'): HTTPStatus.OK,
             reverse('users:logout'): HTTPStatus.OK,
             reverse('users:password_reset_form'): HTTPStatus.OK,
-
         }
         for page, status_code in pages_code.items():
             with self.subTest(page=page):
@@ -44,7 +42,8 @@ class TestUserPages(TestCase):
         self.anon_user = Client()
 
     def test_pages_use_correct_templates(self):
-        """Пользовательские служебные страницы используют правильные шаблоны."""
+        """Пользовательские служебные страницы используют
+        правильные шаблоны."""
         self.uidb64 = 'MTA'
         self.token = 'a88hdr-5fb0f72acbe1e9d2b81b7810dee31037'
         templates_page_names = {
@@ -74,7 +73,8 @@ class TestUserPages(TestCase):
     def test_set_user_info_not_allow_for_anonim(self):
         """Cтраница профиля не доступна анонимному пользователю."""
         response = self.anon_user.get(reverse('users:set_user_info'))
-        self.assertRedirects(response, '/auth/login/?next=/auth/set_user_info/')
+        self.assertRedirects(response,
+                             '/auth/login/?next=/auth/set_user_info/')
 
     def test_user_signup_page_has_correct_context(self):
         """На страницу регистрации нового пользователя передается форма."""

@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import CheckConstraint,UniqueConstraint, F, Q
+from django.db.models import CheckConstraint, F, Q, UniqueConstraint
 from django.urls import reverse
 
 User = get_user_model()
