@@ -1,16 +1,23 @@
+import shutil
+import tempfile
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError
-from rest_framework.exceptions import ValidationError
-from rest_framework.test import APITestCase, APIClient
+from django.test import override_settings
 from django.urls import reverse
+
 from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
 
 from posts.models import Group, Post, Comment, Follow
 
 
 User = get_user_model()
 
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
+
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class TestMyAPI(APITestCase):
 
     @classmethod
@@ -45,6 +52,10 @@ class TestMyAPI(APITestCase):
         self.admin_client.force_authenticate(self.admin)
         self.user_client.force_authenticate(self.user)
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def test_user_access_to_group_list_and_detail(self):
         """Проверка GET запросов к ресурсам от анонимных и аутентифицированных
@@ -219,4 +230,32 @@ class TestMyAPI(APITestCase):
         self.assertEqual(response.status_code,
                          status.HTTP_400_BAD_REQUEST)
 
+    def test_post_note_with_image_in_url(self):
+        """Успешно размещается запись с картинкой.
+        Картинка передается как ссылка на сторонний ресурс."""
+        image_url = (f'https://png.pngtree.com/element_our/20190524/ourmid/'
+                     f'pngtree-hand-painted-watercolor-floral-ornament-png-'
+                     f'free-illustration-image_1106539.jpg')
+        data = {'text': 'new_text',
+                'image': image_url}
 
+        response = self.user_client.post(reverse('api:post-list'), data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        post = Post.objects.first()
+        self.assertTrue(post.image.path)
+        self.assertEqual(Post.objects.count(), 2)
+
+    def test_post_note_with_image_in_base64(self):
+        """Успешно размещается запись с картинкой.
+        Картинка передается как строка base64"""
+        from api.tests.data import image_data
+        data = {'text': 'new_text_2',
+                'image': image_data}
+
+        response = self.user_client.post(reverse('api:post-list'), data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        post = Post.objects.first()
+        self.assertTrue(post.image.path)
+        self.assertEqual(Post.objects.count(), 2)
