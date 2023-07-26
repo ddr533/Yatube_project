@@ -44,7 +44,7 @@ jobs:
         flake8 tests --count --exit-zero --max-complexity=10 --max-line-length=79 --statistics
     - name: Test with pytest
       env:
-        SECRET_KEY: "5UP3R-53CR3T-K3Y-FR0M-TurboKach"
+        SECRET_KEY: ${{ secrets.SECRET_KEY}}
         DJANGO_SETTINGS_MODULE: yatube.settings
         DEBUG: 1
         ALLOWED_HOSTS: "*"
