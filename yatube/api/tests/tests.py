@@ -232,9 +232,9 @@ class TestMyAPI(APITestCase):
     def test_post_note_with_image_in_url(self):
         """Успешно размещается запись с картинкой.
         Картинка передается как ссылка на сторонний ресурс."""
-        image_url = ('https://png.pngtree.com/element_our/20190524/ourmid/'
-                     'pngtree-hand-painted-watercolor-floral-ornament-png-'
-                     'free-illustration-image_1106539.jpg')
+        image_url = ('https://encrypted-tbn0.gstatic.com/'
+                     images?q='
+                     'tbn:ANd9GcTnTGV-n3JVKX6a9SzL0Wtsk_PxgyCUVNdH18MlKoL1&s')
         data = {'text': 'new_text',
                 'image': image_url}
 
