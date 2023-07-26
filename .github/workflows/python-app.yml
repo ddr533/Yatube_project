@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'yandex-praktikum/hw05_final' }}
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
@@ -24,12 +23,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Git Clone Action
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ secrets.repository }}
-        ssh-key: ${{ secrets.ACCESS_TOKEN }}
-        path: yatube/
     - name: Lint with flake8 author
       run: |
         # stop the build if there are Python syntax errors or undefined names
