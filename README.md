@@ -1,3 +1,5 @@
+[![Build and Test](https://github.com/ddr533/Yatube_project/actions/workflows/python-app.yml/badge.svg)](https://github.com/ddr533/Yatube_project/actions/workflows/python-app.yml)
+
 # Yatube  
 ##### Описание проекта 
 Yatube - это социальная сеть, где можно публиковать записи о
@@ -10,8 +12,9 @@ Yatube - это социальная сеть, где можно публико�
 ##### Технологии 
   
  - Python 3.9   
- - Django 4.0
- - Django rest_framework
+ - Django 3.2
+ - Django rest_framework 3.14
+ - channels 3.0.5
  - Sqlite3
   
 ### Как запустить проект:
